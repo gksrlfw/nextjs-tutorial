@@ -6,6 +6,7 @@ import { LoginDTO } from 'src/models/auth/login.dto';
 import { RegisterDTO } from 'src/models/auth/register.dto';
 import { AuthService } from './auth.service';
 import { User } from '../decorator/user.decorator';
+import { UserEntity } from 'src/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -20,7 +21,7 @@ export class AuthController {
     // It is exactly same with upon. It executed local strategy's validation and that inserted user in request.
     @UseGuards(LocalAuthGuard)        
     @Post('/login')
-    login(@Body() credentials: LoginDTO, @User() user, @Request() req) {
+    login(@Body() credentials: LoginDTO, @User() user: UserEntity, @Request() req) {
         // @Request req를 매개변수로 하여, req.user로 받아도 되지만 여기서는 decorator를 만들어서 사용했다
         return this.authService.login(user);
         //return this.authService.login(req.user);
@@ -28,9 +29,8 @@ export class AuthController {
 
     // 로그인이 필요한 작업은 JwtGuard를 통과해야 한다!
     @UseGuards(JwtAuthGuard)        
-    @Get('/he')
-    he(@Request() req) {
-        console.log(req.user);
-        return req.user;
+    @Get('/test')
+    he(@User() user: UserEntity) {
+        return user;
     }
 }

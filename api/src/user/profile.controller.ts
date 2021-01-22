@@ -1,4 +1,31 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Delete, Get, NotFoundException, Param, Post, UseGuards } from '@nestjs/common';
+import { User } from 'src/decorator/user.decorator';
+import { UserEntity } from 'src/entities/user.entity';
+import { JwtAuthGuard } from 'src/guards/auth-jwt.guard';
+import { UserService } from './user.service';
 
 @Controller('profile')
-export class ProfileController {}
+export class ProfileController {
+    constructor(private userService: UserService) {}
+
+    @Get('/:username')
+    async findProfile(@Param('username') username: string) {
+        const profile = await this.userService.findByUsername(username);
+        if(!profile) throw new NotFoundException();
+        return { profile };
+    }
+
+    @Post('/:username/follow')
+    @UseGuards(JwtAuthGuard)
+    async followUser(@User() user: UserEntity, @Param('username') username: string) {
+        const profile = await this.userService.followUser(user, username);
+        return { profile };
+    }
+
+    @Delete('/:username/follow')
+    @UseGuards(JwtAuthGuard)
+    async unfollowUser(@User() user: UserEntity, @Param('username') username: string) {
+        const profile = await this.userService.unfollowUser(user, username);
+        return { profile };
+    }
+}
