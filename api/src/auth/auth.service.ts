@@ -2,7 +2,8 @@ import { ConflictException, Injectable, InternalServerErrorException, Logger, Un
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/entities/user.entity';
-import { LoginDTO, RegisterDTO } from 'src/models/user.dto';
+import { LoginDTO } from 'src/models/auth/login.dto';
+import { RegisterDTO } from 'src/models/auth/register.dto';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -28,18 +29,27 @@ export class AuthService {
         }
     }
 
-    async login(credentials: LoginDTO) {
+    // passport로부터 주입된 req.user를 활용한다
+    async login(user: any) {
+        const payload = { email: user.email, id: user.id, username: user.username };
+        const token = this.jwtService.sign(payload);
+        console.log(payload);
+        return { user: { ...user.toJSON(), token } };
+    }
+
+
+    async login2(credentials: LoginDTO) {
         try {
             const user = await this.userRepository.findOne({ where: { email: credentials.email } });
             if(!user || !(await user.comparePassword(credentials.password))) 
-                throw new UnauthorizedException('Invalid credentials');
+                throw new UnauthorizedException('Invalid credentials in find user or compare password');
 
             // create token
             const payload = { username: user.username };
             const token = this.jwtService.sign(payload);
             return { user: { ...user.toJSON(), token } };
         }
-            catch(err) {
+        catch(err) {
             throw new UnauthorizedException('Invalid credentials');
         }
     }
