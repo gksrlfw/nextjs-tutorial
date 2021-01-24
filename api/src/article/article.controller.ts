@@ -6,7 +6,6 @@ import { CreateArticleDTO } from 'src/models/article/create.dto';
 import { FindAllQuery } from 'src/models/article/findAllQuery.interface';
 import { FindFeedQuery } from 'src/models/article/findFeedQuery.interface';
 import { UpdateArticleDTO } from 'src/models/article/update.dto';
-import { UpdateUserDTO } from 'src/models/auth/update.dto';
 import { ArticleService } from './article.service';
 
 @Controller('articles')

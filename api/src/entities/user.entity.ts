@@ -4,6 +4,9 @@ import { IsEmail } from "class-validator";
 import { BeforeInsert, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { AbstractEntity } from "./abstract-entity";
 import { ArticleEntity } from "./article.entity";
+import { CommentsService } from "src/comments/comments.service";
+import { CommentEntity } from "./comment.entity";
+import { cpuUsage } from "process";
 
 /*
     Relations
@@ -45,6 +48,8 @@ export class UserEntity extends AbstractEntity {
     @ManyToMany(type => ArticleEntity, article => article.favoritedBy)
     @JoinTable({ name: 'favorited' })
     favorites: ArticleEntity[];
+
+    
 
     // For encoding password
     // Do hashing before insert password
