@@ -6,4 +6,8 @@ import { AuthGuard } from "@nestjs/passport";
 // @UseGuards(AuthGuard('local'))  
 // @UseGuards(LocalAuthGuard)        
 @Injectable()
-export class LocalAuthGuard extends AuthGuard('local') {}
+export class LocalAuthGuard extends AuthGuard('local') {
+    // handleRequest(err, user, info, context) {
+    //     return user;
+    // }
+}

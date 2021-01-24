@@ -31,4 +31,10 @@ export class UserService {
         await user.save();
         return user.toProfile(currentUser);
     }
+
+    async getFollowers(curUser: UserEntity) {
+        const user = await this.userRepository.findOne({ where: { email: curUser.email }, relations: ['followee']});
+        console.log(user);
+        return user.followee;
+    }
 }

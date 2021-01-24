@@ -1,8 +1,9 @@
 import { classToPlain, Exclude } from "class-transformer";
 import * as bcrypt from 'bcrypt';
 import { IsEmail } from "class-validator";
-import { BeforeInsert, Column, Entity, JoinTable, ManyToMany } from "typeorm";
+import { BeforeInsert, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { AbstractEntity } from "./abstract-entity";
+import { ArticleEntity } from "./article.entity";
 
 /*
     Relations
@@ -30,14 +31,20 @@ export class UserEntity extends AbstractEntity {
     @Column({ default: null, nullable: true })
     image: string | null;
 
-    // TODO: add following
     // Follow: many to many
     @ManyToMany(type => UserEntity, user => user.followee)
-    @JoinTable()
+    @JoinTable({ name: 'following' })
     followers: UserEntity[];
 
     @ManyToMany(type => UserEntity, user => user.followers)
     followee: UserEntity[];
+
+    @OneToMany(type => ArticleEntity, article => article.author)
+    articles: ArticleEntity[];
+
+    @ManyToMany(type => ArticleEntity, article => article.favoritedBy)
+    @JoinTable({ name: 'favorited' })
+    favorites: ArticleEntity[];
 
     // For encoding password
     // Do hashing before insert password
@@ -55,9 +62,10 @@ export class UserEntity extends AbstractEntity {
         return classToPlain(this);
     }
 
-    toProfile(user: UserEntity) {
-        const following = this.followers.includes(user);
-        const profile = this.toJSON();
+    toProfile(user?: UserEntity) {
+        let following = null;
+        if(user) following = this.followers.includes(user);
+        const profile: any = this.toJSON();
         delete profile.followers;
         return { ...profile, following };
     }

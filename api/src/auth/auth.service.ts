@@ -30,7 +30,7 @@ export class AuthService {
     }
 
     // passport로부터 주입된 req.user를 활용한다
-    async login(user: any) {
+    async login(user: UserEntity) {
         const payload = { email: user.email, id: user.id, username: user.username };
         const token = this.jwtService.sign(payload);
         console.log(payload);
@@ -52,5 +52,13 @@ export class AuthService {
         catch(err) {
             throw new UnauthorizedException('Invalid credentials');
         }
+    }
+    async calll(credentials) {
+        const user = await this.userRepository.findOne({ where: { email: credentials.email }});
+        console.log(user);
+        const a = user.toJSON();
+        console.log(a);
+        console.log(user.toProfile());
+        
     }
 }
